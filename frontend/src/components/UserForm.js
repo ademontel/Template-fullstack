@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import './UserForm.css'; // Optional: Add styles for the registration form
+import { Link } from 'react-router-dom';
+import './UserForm.css';
 
 function UserForm({ onRegister }) {
   const [username, setUsername] = useState('');
@@ -8,12 +9,14 @@ function UserForm({ onRegister }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onRegister({ username, email, password });
+    if (onRegister) {
+      onRegister({ username, email, password });
+    }
   };
 
   return (
     <div className="userform-container">
-      <h2>Register</h2>
+      <h2>Registro de Usuario</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="username">Username</label>
@@ -45,7 +48,12 @@ function UserForm({ onRegister }) {
             required
           />
         </div>
-        <button type="submit">Register</button>
+        <button type="submit">Registrarse</button>
+        <div className="mt-4 text-center">
+          <Link to="/" className="text-blue-500 hover:underline">
+            Volver al login
+          </Link>
+        </div>
       </form>
     </div>
   );
