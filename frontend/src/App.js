@@ -1,70 +1,59 @@
-import React, { useState } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
-import UserForm from './components/UserForm';
+import React from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import UserList from './components/UserList';
+import UserForm from './components/UserForm';
 import Login from './components/Login';
-import { isAuthenticatedUser, login, logout } from './flux/auth';
-import { addUser } from './flux/actions';
+import Register from './components/Register';
+import { UserProvider } from './context/UserContext';
+import { AuthProvider } from './context/AuthContext';
+import { useAuth } from './context/AuthContext';
+
+// Componente para proteger rutas
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+  return children;
+};
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(isAuthenticatedUser());
-  const navigate = useNavigate();
-
-  const handleLogin = async (credentials) => {
-    try {
-      const success = await login(credentials);
-      if (success) {
-        setIsAuthenticated(true);
-      } else {
-        alert('Credenciales inválidas');
-      }
-    } catch (error) {
-      console.error('Error en login:', error);
-      alert('Error al intentar iniciar sesión');
-    }
-  };
-
-  const handleLogout = () => {
-    logout();
-    setIsAuthenticated(false);
-  };
-
-  const handleRegister = (userData) => {
-    const user = {
-      name: userData.username,
-      email: userData.email,
-      password: userData.password
-    };
-    
-    try {
-      addUser(user);
-      navigate('/');
-    } catch (error) {
-      alert('Error al registrar usuario: ' + error.message);
-    }
-  };
-
   return (
-    <div className="container mt-5">
-      <Routes>
-        <Route
-          path="/"
-          element={
-            isAuthenticated ? (
-              <>
-                <h1>User CRUD HOLA</h1>
-                <button onClick={handleLogout}>Logout</button>
-                <UserForm />
+    <AuthProvider>
+      <UserProvider>
+        <div className="container">
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/" element={
+              <ProtectedRoute>
+                <Navigate to="/users" replace />
+              </ProtectedRoute>
+            } />
+            <Route path="/users" element={
+              <ProtectedRoute>
                 <UserList />
-              </>
-            ) : (
-              <Login onLogin={handleLogin} />
-            )
-          }
-        />
-        <Route path="/register" element={<UserForm onRegister={handleRegister} />} />
-      </Routes>
-    </div>
+              </ProtectedRoute>
+            } />
+            <Route path="/users/new" element={
+              <ProtectedRoute>
+                <UserForm />
+              </ProtectedRoute>
+            } />
+            <Route path="/users/:id" element={
+              <ProtectedRoute>
+                <UserForm />
+              </ProtectedRoute>
+            } />
+            <Route path="*" element={
+              <Navigate to="/" replace />
+            } />
+          </Routes>
+        </div>
+      </UserProvider>
+    </AuthProvider>
   );
 }
 
