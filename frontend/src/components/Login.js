@@ -1,22 +1,19 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import './UserForm.css';
+import './Login.css'; // Optional: Add styles for the login form
 
-function UserForm({ onRegister }) {
+function Login({ onLogin }) {
   const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (onRegister) {
-      onRegister({ username, email, password });
-    }
+    onLogin({ username, password });
   };
 
   return (
-    <div className="userform-container">
-      <h2>Registro de Usuario</h2>
+    <div className="login-container">
+      <h2>Login</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="username">Username</label>
@@ -25,16 +22,6 @@ function UserForm({ onRegister }) {
             id="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
@@ -48,15 +35,13 @@ function UserForm({ onRegister }) {
             required
           />
         </div>
-        <button type="submit">Registrarse</button>
-        <div className="mt-4 text-center">
-          <Link to="/" className="text-blue-500 hover:underline">
-            Volver al login
-          </Link>
-        </div>
+        <button type="submit">Login</button>
       </form>
+      <p className="mt-4 text-sm text-gray-600">
+        No tiene usuario? <Link to="/register" className="text-blue-500 hover:underline">Regístrese</Link>
+      </p>
     </div>
   );
 }
 
-export default UserForm;
+export default Login;
