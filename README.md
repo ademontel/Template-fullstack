@@ -1,5 +1,5 @@
 # User CRUD App (React + FastAPI + Docker)
-
+⚠️ Este proyecto está deprecated y ya no recibe mantenimiento
 ## Estructura de carpetas
 
 - **frontend/**: Aplicación React con Flux y Bootstrap
